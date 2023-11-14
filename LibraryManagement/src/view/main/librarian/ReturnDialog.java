@@ -25,7 +25,7 @@ public class ReturnDialog extends javax.swing.JDialog {
     private Reader reader;
     private DefaultTableModel modelBookBorrowed;
     private DefaultTableModel modelChosenBook;
-    private Map<Integer, Vector> mapBookBorrewed;
+    private Map<String, Vector> mapBookBorrewed;
     /**
      * Creates new form ReturnDialog
      * @param parent
@@ -154,11 +154,11 @@ public class ReturnDialog extends javax.swing.JDialog {
 
             },
             new String [] {
-                "ID", "Title", "Location", "Author", "Publisher", "Category", "Date Start"
+                "ID", "Title", "Author", "Category", "Date Start"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -424,7 +424,7 @@ public class ReturnDialog extends javax.swing.JDialog {
         
         Vector vt = new Vector();
         int overDueFines = bookLoan.getOverdueFines(ChooseReaderPanel.username, modelBookBorrowed.getValueAt(selectedRow, 0).toString());
-        System.out.println(overDueFines);
+        System.out.println("Overdue fine: " + overDueFines);
         vt.add(modelBookBorrowed.getValueAt(selectedRow, 0));
         vt.add(modelBookBorrowed.getValueAt(selectedRow, 1));
         vt.add(modelBookBorrowed.getValueAt(selectedRow, 3));
@@ -445,7 +445,7 @@ public class ReturnDialog extends javax.swing.JDialog {
             return;
         }       
         
-        int key = Integer.parseInt(modelChosenBook.getValueAt(selectedRow, 0).toString());
+        String key = modelChosenBook.getValueAt(selectedRow, 0).toString();
         
         modelBookBorrowed.addRow(mapBookBorrewed.get(key));
         
@@ -458,7 +458,7 @@ public class ReturnDialog extends javax.swing.JDialog {
         int selectedRow = jTable_BooksBorrowed.getSelectedRow();
         
         if(selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn sách muốn mượn!");
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn sách muốn báo cáo!");
             return;
         }
         
@@ -470,7 +470,8 @@ public class ReturnDialog extends javax.swing.JDialog {
         Vector vt = new Vector();
         int overDueFines = bookLoan.getOverdueFines(ChooseReaderPanel.username, modelBookBorrowed.getValueAt(selectedRow, 0).toString());
         int brokenLostFines = bookLoan.getBrokenLostFines(ChooseReaderPanel.username, modelBookBorrowed.getValueAt(selectedRow, 0).toString());
-        System.out.println(overDueFines);
+        System.out.println("Overdue fine: " + overDueFines);
+		System.out.println("Damage fine: " + brokenLostFines);
         vt.add(modelBookBorrowed.getValueAt(selectedRow, 0));
         vt.add(modelBookBorrowed.getValueAt(selectedRow, 1));
         vt.add(modelBookBorrowed.getValueAt(selectedRow, 3));
@@ -489,9 +490,9 @@ public class ReturnDialog extends javax.swing.JDialog {
             return;
         
         int size = modelChosenBook.getRowCount();
-        int key = 0;
+        String key = "";
         for(int i = 0; i < size; i++) {
-            key = Integer.parseInt(modelChosenBook.getValueAt(i, 0).toString());
+            key = modelChosenBook.getValueAt(i, 0).toString();
             modelBookBorrowed.addRow(mapBookBorrewed.get(key));
         }
         
@@ -500,7 +501,7 @@ public class ReturnDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_jButton_ClearActionPerformed
 
     private void jButton_ReturnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_ReturnActionPerformed
-        // TODO add your handling code here:
+
         if(modelChosenBook.getRowCount() == 0) {
             JOptionPane.showMessageDialog(this, "Chưa có sách được chọn!");
             return;

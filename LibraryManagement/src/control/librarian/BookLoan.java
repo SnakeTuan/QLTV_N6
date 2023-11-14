@@ -84,22 +84,16 @@ public class BookLoan {
         }   
     }    
     
-    public void loadBookBorrowed(Map<Integer, Vector> mapBookBorrewed, DefaultTableModel model, String username){
+    public void loadBookBorrowed(Map<String, Vector> mapBookBorrewed, DefaultTableModel model, String username){
         
         model.setNumRows(0);
         Connection ketNoi= Connect.GetConnect();
         Vector vt;
         try {
-            PreparedStatement ps = ketNoi.prepareStatement("select b.book_id, b.title, l.location, a.name, p.name, c.category, loan.date_start\n" +
-                                                            "from loan\n" +
-                                                            "inner join loan_detail dt on loan.loan_id = dt.loan_id\n" +
-                                                            "inner join book b on b.book_id = dt.book_id\n" +
-                                                            "inner join location l on b.location_id = l.location_id\n" +
-                                                            "inner join author a on b.author_id = a.author_id\n" +
-                                                            "inner join publisher p on b.publisher_id = p.publisher_id\n" +
-                                                            "inner join category c on b.category_id = c.category_id\n" +
-                                                            "where dt.status = 0 and loan.user_id = '" + username + "'");
-            ResultSet rs=ps.executeQuery();
+            PreparedStatement ps = ketNoi.prepareStatement("select b.id, b.title, b.Author, c.category_name, l.date_start from loan l inner join loan_detail ld on l.id = ld.loan_id inner join book b on b.id = ld.book_id inner join category c on b.category_id = c.id where ld.detail_status = 0 and l.account_id = ?");
+            ps.setString(1, username);
+			ResultSet rs=ps.executeQuery();
+			int cnt = 1;
             while(rs.next()){
                 vt = new Vector();
                 vt.add(rs.getString(1));
@@ -107,10 +101,10 @@ public class BookLoan {
                 vt.add(rs.getString(3));
                 vt.add(rs.getString(4));
                 vt.add(rs.getString(5));
-                vt.add(rs.getString(6));
-                vt.add(rs.getString(7));
                 model.addRow(vt);
-                mapBookBorrewed.put(rs.getInt(1), vt);
+                mapBookBorrewed.put(rs.getString(1), vt);
+				System.out.println("load xong sach " + rs.getString(1));
+				cnt++;
             }
             ps.close();
             rs.close();
@@ -336,13 +330,15 @@ public class BookLoan {
         int size = modelChosenBook.getRowCount();
         for (int i = 0; i < size; i++) {
             
+			System.out.println("Trạng thái: " + Integer.parseInt(modelChosenBook.getValueAt(i,4).toString()));
+			
             if(Integer.parseInt(modelChosenBook.getValueAt(i,4).toString()) != 0)
                 continue;
             
             try {
                 Connection con = Connect.GetConnect();
-                PreparedStatement rs = con.prepareStatement("UPDATE BOOK SET no_of_copies_current = no_of_copies_current + 1 WHERE book_id = ?");
-                rs.setInt(1, Integer.parseInt(modelChosenBook.getValueAt(i,0).toString()));
+                PreparedStatement rs = con.prepareStatement("UPDATE BOOK SET current_copies = current_copies + 1 WHERE id = ?");
+                rs.setString(1, modelChosenBook.getValueAt(i,0).toString());
                 rs.executeUpdate();
                 rs.close();
                 con.close();
@@ -421,29 +417,46 @@ public class BookLoan {
         updateBookQuantity(modelChosenBook);
     }
     
+	private String getLoanID(String account_id, String book_id){
+		String query = "select l.id from loan l inner join loan_detail ld on l.id = ld.loan_id where l.account_id = ? and ld.detail_status = 0 and ld.book_id = ?";
+		try {
+			Connection con = Connect.GetConnect();
+			PreparedStatement ps = con.prepareStatement(query);
+			ps.setString(1, account_id);
+			ps.setString(2, book_id);
+		} catch (SQLException ex) {
+			Logger.getLogger(BookLoan.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		return "";
+	}
+	
     public void returnBook(String username, DefaultTableModel modelChosenBook) {
-        
-        String query = "update loan_detail\n" +
-                        "set status = ?, date_end = Getdate()\n" +
-                        "where status = 0 and book_id = ?\n" +
-                        "and loan_id = (select dt.loan_id\n" +
-                        "                from loan l\n" +
-                        "                inner join loan_detail dt\n" +
-                        "                on l.loan_id = dt.loan_id\n" +
-                        "                where l.user_id = '" + username + "'\n" +
-                        "                and dt.status = 0\n" +
-                        "                and dt.book_id = ?)";
+        String pre_query = "select l.id from loan l inner join loan_detail ld on l.id = ld.loan_id where l.account_id = ? and ld.detail_status = 0 and ld.book_id = ?";
+		String query = "update loan_detail set detail_status = ?, date_end = GETDATE() where detail_status = 0 and book_id = ? and loan_id = ?";
         int size = modelChosenBook.getRowCount();
-        int bookID = 0;
+        String bookID = "";
         int overDueFines = 0;
         int brokenLostFines = 0;
+		int status = 0;
+		String loan_id = "";
+		
         for (int i = 0; i < size; i++) {
-            bookID = Integer.parseInt(modelChosenBook.getValueAt(i,0).toString());
+            bookID = modelChosenBook.getValueAt(i,0).toString();
             overDueFines = Integer.parseInt(modelChosenBook.getValueAt(i,3).toString());
             brokenLostFines = Integer.parseInt(modelChosenBook.getValueAt(i,4).toString());
+			System.out.println("TEST1: " + username);
+			System.out.println("TEST2: " + bookID);
             try {
                 Connection con = Connect.GetConnect();
-                PreparedStatement rs = con.prepareStatement(query);
+				PreparedStatement pre_ps = con.prepareStatement(pre_query);
+				pre_ps.setString(1, username);
+				pre_ps.setString(2, bookID);
+				ResultSet pre_rs = pre_ps.executeQuery();
+				pre_rs.next();
+				loan_id = pre_rs.getString(1);
+				System.out.println("Loan_id: " + loan_id);
+				
+                PreparedStatement ps = con.prepareStatement(query);
                 /*
                     Status 0: đang mượn chưa trả
                     Status 1: đã trả, không trễ, không làm hỏng/mất
@@ -451,18 +464,30 @@ public class BookLoan {
                     Status 3: đã trả, không trễ, làm hỏng/mất
                     Status 4: đã trả, trả trễ, làm hỏng/mất
                 */
-                if(brokenLostFines != 0 && overDueFines != 0)
-                    rs.setInt(1, 4);
-                else if(brokenLostFines != 0 && overDueFines == 0)
-                    rs.setInt(1, 3);
-                else if(brokenLostFines == 0 && overDueFines != 0)
-                    rs.setInt(1, 2);
-                else
-                    rs.setInt(1, 1);
-                rs.setInt(2, bookID);
-                rs.setInt(3, bookID);
-                rs.executeUpdate();
-                rs.close();
+                if(brokenLostFines != 0 && overDueFines != 0){
+					status = 4;
+					System.out.println("đã trả, trả trễ, làm hỏng/mất");
+                    ps.setInt(1, status);
+				}
+                else if(brokenLostFines != 0 && overDueFines == 0){
+					status = 3;
+                    System.out.println("đã trả, không trễ, làm hỏng/mất");
+					ps.setInt(1, status);
+				}
+                else if(brokenLostFines == 0 && overDueFines != 0){
+					status = 2;
+                    System.out.println("đã trả, trả trễ, không làm hỏng/mất");
+					ps.setInt(1, status);
+				}
+				else{
+					status = 1;
+					System.out.println("đã trả, không trễ, không làm hỏng/mất");
+                    ps.setInt(1, status);
+				}
+                ps.setString(2, bookID);
+                ps.setString(3, loan_id);
+                ps.executeUpdate();
+                ps.close();
                 con.close();
             } catch (SQLException ex) {
                 Logger.getLogger(BookLoan.class.getName()).log(Level.SEVERE, null, ex);
@@ -528,16 +553,14 @@ public class BookLoan {
     }
     
     public int getOverdueFines(String username, String bookID) {
-        String query = "select DATEADD(day, r.max_rental_day, loan.date_start), r.fine\n" +
-                        "from loan\n" +
-                        "inner join [rule] r on loan.rule_id = r.rule_id\n" +
-                        "inner join loan_detail dt on loan.loan_id = dt.loan_id\n" +
-                        "where dt.status = 0 and loan.user_id = '" + username + "' and dt.book_id = " + bookID;
+        String query = "select ld.date_end, r.overdue_fine from loan l inner join loan_rule r on l.loan_rule_id = r.id inner join loan_detail ld on l.id = ld.loan_id where ld.detail_status = 0 and l.account_id = ? and ld.book_id = ?";
         int overDueFines = 0;
         String date = null;
         try {
             Connection con = Connect.GetConnect();
             PreparedStatement ps = con.prepareStatement(query);
+			ps.setString(1, username);
+			ps.setString(2, bookID);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 date = rs.getString(1);
@@ -566,17 +589,14 @@ public class BookLoan {
     }
        
     public int getBrokenLostFines(String username, String bookID) {
-        String query = "select b.price, r.penalties_damaged\n" +
-                        "from loan\n" +
-                        "inner join [rule] r on loan.rule_id = r.rule_id\n" +
-                        "inner join loan_detail dt on loan.loan_id = dt.loan_id\n" +
-                        "inner join book b on dt.book_id = b.book_id\n" +
-                        "where dt.status = 0 and loan.user_id = '" + username + "' and dt.book_id = " + bookID;
+        String query = "select b.price, r.damage_fine from loan l inner join loan_rule r on l.loan_rule_id = r.id inner join loan_detail ld on l.id = ld.loan_id inner join book b on ld.book_id = b.id where ld.detail_status = 0 and l.account_id = ? and ld.book_id = ?";
         int brokenlost = 0;
         int price = 0;
         try {
             Connection con = Connect.GetConnect();
             PreparedStatement ps = con.prepareStatement(query);
+			ps.setString(1, username);
+			ps.setString(2, bookID);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 price = rs.getInt(1);

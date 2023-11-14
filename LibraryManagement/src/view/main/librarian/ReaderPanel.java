@@ -572,9 +572,9 @@ public class ReaderPanel extends javax.swing.JPanel {
         jButton_Modify.setEnabled(false);
         jButton_Remove.setEnabled(false);
         jButton_Extend.setEnabled(false);
-        disbleAccount(jTextField_Username.getText());
+//        disbleAccount(jTextField_Username.getText());
         
-         JOptionPane.showMessageDialog(null, "Xóa thành công!");
+//         JOptionPane.showMessageDialog(null, "Xóa thành công!");
          layUser();
         int luaChon = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa?", "Xác nhận", 0);
         if (luaChon == JOptionPane.OK_OPTION) {

@@ -169,6 +169,11 @@ public class LoanDialog extends javax.swing.JDialog {
                 jTextField_SearchBookCaretUpdate(evt);
             }
         });
+        jTextField_SearchBook.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField_SearchBookActionPerformed(evt);
+            }
+        });
 
         jButton_ClearSearch.setFont(new java.awt.Font("Segoe UI", 1, 17)); // NOI18N
         jButton_ClearSearch.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/clear.png"))); // NOI18N
@@ -208,14 +213,14 @@ public class LoanDialog extends javax.swing.JDialog {
 
             },
             new String [] {
-                "ID", "Title", "Location", "Author", "Publisher", "Category", "Number"
+                "ID", "Title", "Author", "Published year", "Category", "Number"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Integer.class
+                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Integer.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -422,29 +427,43 @@ public class LoanDialog extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn sách muốn mượn!");
             return;
         }
+		else{
+			System.out.println("Pass buoc 1");
+		}
         if(modelChosenBook.getRowCount() == ChooseReaderPanel.remainingBook) {
             JOptionPane.showMessageDialog(this, "Đã đạt số sách tối đa được mượn!");
             return;
         }
-        if(Integer.parseInt(modelBookList.getValueAt(selectedRow, 6).toString()) == 0) {
+		else{
+			System.out.println("Pass buoc 2");
+		}
+        if(Integer.parseInt(modelBookList.getValueAt(selectedRow, 5).toString()) == 0) {
             JOptionPane.showMessageDialog(this, "Số lượng sách này đã hết, không thể mượn. Vui lòng chọn sách khác!");
             return;
         }
-        
+        else{
+			System.out.println("Pass buoc 3");
+		}
         if(bookLoan.findChosenBook(modelChosenBook, modelBookList.getValueAt(selectedRow, 0).toString())) {
             JOptionPane.showMessageDialog(this, "Sách này đã được chọn!");
             return;
         }
-        
+        else{
+			System.out.println("Pass buoc 4");
+		}
+		System.out.println(ChooseReaderPanel.username);
+		System.out.println(modelBookList.getValueAt(selectedRow, 0).toString());
         if(bookLoan.findBorrowedBook(ChooseReaderPanel.username, modelBookList.getValueAt(selectedRow, 0).toString())) {
             JOptionPane.showMessageDialog(this, "Không thể mượn sách mà độc giả đang mượn. Vui lòng chọn sách khác!");
             return;
         }
-        
+        else{
+			System.out.println("Pass buoc 5");
+		}
         Vector vt = new Vector();
         vt.add(modelBookList.getValueAt(selectedRow, 0));
         vt.add(modelBookList.getValueAt(selectedRow, 1));
-        vt.add(modelBookList.getValueAt(selectedRow, 3));
+        vt.add(modelBookList.getValueAt(selectedRow, 2));
         modelChosenBook.addRow(vt);
     }//GEN-LAST:event_jButton_ChooseActionPerformed
 
@@ -494,7 +513,7 @@ public class LoanDialog extends javax.swing.JDialog {
         bookLoan.borrowBook(ChooseReaderPanel.username, modelChosenBook);
         JOptionPane.showMessageDialog(this, "Mượn sách thành công!");
         
-        int loanID = bookLoan.getCurrentBorrow();
+        String loanID = bookLoan.getCurrentBorrow();
         File.xuatFilePDF("PhieuMuon" + loanID, "PHIẾU MƯỢN SÁCH " + loanID, getReaderInformation(), modelChosenBook);
         this.dispose();
     }//GEN-LAST:event_jButton_BorrowActionPerformed
@@ -503,6 +522,10 @@ public class LoanDialog extends javax.swing.JDialog {
         // TODO add your handling code here:
         jTextField_SearchBook.setText("");
     }//GEN-LAST:event_jButton_ClearSearchActionPerformed
+
+    private void jTextField_SearchBookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField_SearchBookActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField_SearchBookActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton_Borrow;

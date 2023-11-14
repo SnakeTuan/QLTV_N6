@@ -302,7 +302,11 @@ public class LoginFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel_iMouseClicked
 
     private void jButton_WithoutLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_WithoutLoginActionPerformed
-        // TODO add your handling code here:
+        branch_name = (String) jComboBox_branch.getSelectedItem();
+		System.out.println("Tên Branch: " + branch_name);
+		
+		branch_id = getBranchID(branch_name);
+		System.out.println("id_branch: " + branch_id);
         this.bookDialog = new BookDialog(this, true);
         this.bookDialog.setVisible(true);
     }//GEN-LAST:event_jButton_WithoutLoginActionPerformed

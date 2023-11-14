@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -32,16 +33,9 @@ public class BookLoan {
         Connection ketNoi= Connect.GetConnect();
         Vector vt;
         try {
-            PreparedStatement ps = ketNoi.prepareStatement("select a.username,a.Full_Name,a.gender,a.date_of_birth,address.specific_address + ' - ' + ward.ward_name  + ' - ' + district.district_name + ' - ' + province.province_name as diachi,a.phone_number,a.email,a.registered_date from account a\n" +
-                                                                "inner join address\n" +
-                                                                "on address.address_id = a.address_id\n" +
-                                                                "left join ward\n" +
-                                                                "on address.ward_id = ward.ward_id\n" +
-                                                                "left join district\n" +
-                                                                "on ward.district_id = district.district_id\n" +
-                                                                "left join province\n" +
-                                                                "on district.province_id = province.province_id where a.role_id = 1 and a.status = 1");
-            ResultSet rs=ps.executeQuery();
+            PreparedStatement ps = ketNoi.prepareStatement("select id, account_name, gender, date_of_birth, account_address, phone, email, registered_date from account where account_role_id = 1 and account_status = 1 and branch_id = ?");
+            ps.setString(1, view.login.LoginFrame.branch_id);
+			ResultSet rs=ps.executeQuery();
             while(rs.next()){
                 vt = new Vector();
                 vt.add(rs.getString(1));
@@ -68,13 +62,10 @@ public class BookLoan {
         Connection ketNoi= Connect.GetConnect();
         Vector vt;
         try {
-            PreparedStatement ps = ketNoi.prepareStatement("select b.book_id, b.title, l.location, a.name, p.name, c.category, b.no_of_copies_current\n" +
-                                                            "from book b\n" +
-                                                            "inner join location l on b.location_id = l.location_id\n" +
-                                                            "inner join author a on b.author_id = a.author_id\n" +
-                                                            "inner join publisher p on b.publisher_id = p.publisher_id\n" +
-                                                            "inner join category c on b.category_id = c.category_id");
-            ResultSet rs=ps.executeQuery();
+	
+            PreparedStatement ps = ketNoi.prepareStatement("select b.id, b.title, b.Author, b.published_year, c.category_name, b.current_copies from book b inner join category c on b.category_id = c.id where branch_id = ?");
+            ps.setString(1, view.login.LoginFrame.branch_id);
+			ResultSet rs=ps.executeQuery();
             while(rs.next()){
                 vt = new Vector();
                 vt.add(rs.getString(1));
@@ -83,7 +74,6 @@ public class BookLoan {
                 vt.add(rs.getString(4));
                 vt.add(rs.getString(5));
                 vt.add(rs.getString(6));
-                vt.add(rs.getString(7));
                 model.addRow(vt);
             }
             ps.close();
@@ -221,16 +211,13 @@ public class BookLoan {
     }
     
     public boolean findBorrowedBook(String username, String bookID) {
-        String query =  "select *\n" +
-                        "from loan l\n" +
-                        "inner join loan_detail dt\n" +
-                        "on l.loan_id = dt.loan_id\n" +
-                        "where l.user_id = '" + username + "'\n" +
-                        "and dt.status = 0\n" +
-                        "and dt.book_id = " + bookID;
+        String query =  "select * from loan l inner join loan_detail ld on l.id = ld.loan_id where l.account_id = ? and ld.detail_status = ? and ld.book_id = ?";
         try {
             Connection conn = Connect.GetConnect();
             PreparedStatement ps = conn.prepareStatement(query);
+			ps.setString(1, username);
+			ps.setInt(2, 0);
+			ps.setString(3, bookID);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {                
                 return true;                
@@ -241,16 +228,64 @@ public class BookLoan {
         return false;
     }
     
+    private String getCurrentLoan(Connection connection) throws SQLException {
+        // Truy vấn cơ sở dữ liệu để lấy mã tăng dần hiện tại
+        String query = "SELECT MAX(id) AS maxID FROM loan WHERE branch_id = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+		preparedStatement.setString(1, view.login.LoginFrame.branch_id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        
+        String currentID = view.login.LoginFrame.branch_id + "L000"; // Giá trị mặc định nếu chưa có dữ liệu trong bảng
+        
+        while (resultSet.next()) {
+            String maxID = resultSet.getString("maxID");
+            if (maxID != null) {
+                currentID = maxID;
+            }
+        }
+        
+        preparedStatement.close();
+        resultSet.close();
+        
+        return currentID;
+    }
+
+    private int getNumber(String currentID) {
+        // Tách phần số từ mã hiện tại
+        String numberPart = currentID.substring(currentID.length() - 3);
+        return Integer.parseInt(numberPart);
+    }
+
+    private String generateNewID(int nextNumber) {
+		nextNumber++;
+        // Ghép phần số vào mã mới
+		String s = view.login.LoginFrame.branch_id + "L";
+        return s + String.format("%03d", nextNumber);
+    }
+	
     public void insertLoan(String username) {
+		Connection con = Connect.GetConnect();
         SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
         String ngayMuon = dateFormatter.format(new java.util.Date());
         int ruleID = getCurrentRule().getMaQuyDinh();
+		
+		String current_id = "";
+		try {
+			current_id = getCurrentLoan(con);
+		} catch (SQLException ex) {
+			Logger.getLogger(BookLoan.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		
+		int new_num = getNumber(current_id);
+		String new_id = generateNewID(new_num);
+		
         try (
-            Connection con = Connect.GetConnect();
-            PreparedStatement rs = con.prepareStatement("INSERT INTO LOAN VALUES(?, ?, ?)")) {
-            rs.setString(1, username);
-            rs.setString(2, ngayMuon);
-            rs.setInt(3, ruleID);
+            PreparedStatement rs = con.prepareStatement("INSERT INTO LOAN (id, branch_id, account_id, loan_rule_id, date_start) VALUES(?, ?, ?, ?, ?)")) {
+			rs.setString(1, new_id);
+			rs.setString(2, view.login.LoginFrame.branch_id);
+            rs.setString(3, username);
+            rs.setString(5, ngayMuon);
+            rs.setInt(4, ruleID);
             rs.executeUpdate();
             rs.close();
             con.close();
@@ -259,18 +294,15 @@ public class BookLoan {
         }
     }
     
-    public int getCurrentBorrow() {
-        String query =  "select top 1 *\n" +
-                        "from loan\n" +
-                        "order by loan_id\n" +
-                        "desc";
-        int loanID = 0;
+    public String getCurrentBorrow() {
+        String query =  "select top 1 * from loan order by id desc";
+        String loanID = "";
         try {
             Connection con = Connect.GetConnect();
             PreparedStatement ps = con.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                loanID = rs.getInt(1);
+                loanID = rs.getString(1);
             }
             rs.close();
             ps.close();
@@ -288,8 +320,8 @@ public class BookLoan {
         for (int i = 0; i < size; i++) {
             try {
                 Connection con = Connect.GetConnect();
-                PreparedStatement rs = con.prepareStatement("UPDATE BOOK SET no_of_copies_current = no_of_copies_current - 1 WHERE book_id = ?");
-                rs.setInt(1, Integer.parseInt(modelChosenBook.getValueAt(i,0).toString()));
+                PreparedStatement rs = con.prepareStatement("UPDATE BOOK SET current_copies = current_copies - 1 WHERE id = ?");
+                rs.setString(1, modelChosenBook.getValueAt(i,0).toString());
                 rs.executeUpdate();
                 rs.close();
                 con.close();
@@ -320,21 +352,68 @@ public class BookLoan {
         }          
     }
     
+    private String getCurrentLoan_detail(Connection connection ,String loan_ID) throws SQLException {
+        String loan_part = loan_ID.substring(loan_ID.length() - 4);
+		
+		String query = "SELECT MAX(id) AS maxID FROM loan_detail WHERE loan_id = ?";
+		PreparedStatement preparedStatement = connection.prepareStatement(query);
+		preparedStatement.setString(1, loan_ID);
+		ResultSet resultSet = preparedStatement.executeQuery();
+		
+		String loan_detail_id = loan_part + "D000";
+		
+		while (resultSet.next()){
+			String maxID = resultSet.getString("maxID");
+			if (maxID != null) {
+                loan_detail_id = maxID;
+            }
+		}
+		
+        System.out.println("old_loan_detail_id: " + loan_detail_id);
+		
+		preparedStatement.close();
+        resultSet.close();
+        return loan_detail_id;
+    }
+
+    private String generateNewLoanDetailID(int nextNumber, String loan_ID) {
+		nextNumber++;
+        String loan_part = loan_ID.substring(loan_ID.length() - 4);
+		String s = loan_part + "D";
+        return s + String.format("%03d", nextNumber);
+    }
+	
     public void borrowBook(String username, DefaultTableModel modelChosenBook) {
         insertLoan(username);
-        int loanID = getCurrentBorrow();
+        String loanID = getCurrentBorrow();
         String query;
         int size = modelChosenBook.getRowCount();
         for (int i = 0; i < size; i++) {
             try {
                 Connection con = Connect.GetConnect();
-                PreparedStatement rs = con.prepareStatement("INSERT INTO LOAN_DETAIL (loan_id, book_id, status) VALUES(?, ?, ?)");
-                rs.setInt(1, loanID);
-                rs.setInt(2, Integer.parseInt(modelChosenBook.getValueAt(i,0).toString()));
-                rs.setInt(3, 0);
+				String old_LD_ID = getCurrentLoan_detail(con, loanID);
+				int new_num = getNumber(old_LD_ID);
+				String new_ld_id = generateNewLoanDetailID(new_num, loanID);
+				System.out.println("new_loan_detail_id: " + new_ld_id);
+                PreparedStatement rs = con.prepareStatement("INSERT INTO LOAN_DETAIL (id, loan_id, book_id, date_end, detail_status) VALUES(?, ?, ?, ?, ?)");
+				Rule loan_rule = getCurrentRule();
+				
+				java.util.Date currentDate = new java.util.Date();
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(currentDate);
+				calendar.add(Calendar.DAY_OF_MONTH, loan_rule.getSoNgayMuonToiDa());
+				java.util.Date endDate = calendar.getTime();
+				java.sql.Date sqlEndDate = new java.sql.Date(endDate.getTime());
+				
+                rs.setString(1, new_ld_id);
+				rs.setString(2, loanID);
+                rs.setString(3, modelChosenBook.getValueAt(i,0).toString());
+				rs.setDate(4, sqlEndDate);
+                rs.setInt(5, 0);
                 rs.executeUpdate();
                 rs.close();
                 con.close();
+				System.out.println("done insert new_loan_detail_id");
             } catch (SQLException ex) {
                 Logger.getLogger(BookLoan.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -394,7 +473,7 @@ public class BookLoan {
     
     public boolean expiredUser(String username){
         LocalDate today = LocalDate.now();
-        String query = "EXEC [dbo].[SP_GetExpirationDate] '" + username + "'";
+        String query = "EXEC SP_GetExpirationDate " + username + ", null, " + view.login.LoginFrame.branch_id;
         try {
             Connection conn = Connect.GetConnect();
             PreparedStatement ps = conn.prepareStatement(query);
@@ -416,7 +495,7 @@ public class BookLoan {
     }
     
     public int numberOfBooksBorrowing(String username) {
-        String query = "select count(*) from loan_detail dt inner join loan l on dt.loan_id = l.loan_id and dt.status = 0 and l.user_id = '" + username + "'";
+        String query = "select count(*) from loan_detail ldt inner join loan l on ldt.loan_id = l.id and ldt.detail_status = 0 and l.account_id = '" + username + "'";
         try (
             Connection con = Connect.GetConnect();
             PreparedStatement ps = con.prepareStatement(query);
@@ -430,14 +509,14 @@ public class BookLoan {
     }
     
     public Rule getCurrentRule() {
-        String query = "select top 1 * FROM [rule] ORDER BY rule_id DESC";
+        String query = "select top(1) * FROM loan_rule ORDER BY id DESC";
         Rule rule = null;
         try {
             Connection con = Connect.GetConnect();
             PreparedStatement ps = con.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                rule = new Rule(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getString(6));
+                rule = new Rule(rs.getInt(1), rs.getInt(4), rs.getInt(5), rs.getInt(2), rs.getInt(3), rs.getString(6));
             }
             rs.close();
             ps.close();
@@ -515,7 +594,7 @@ public class BookLoan {
     }
     
     public boolean expiredBook(String username, int soNgayMuonToiDa) {
-        String query = "select * from loan_detail dt inner join loan l on dt.loan_id = l.loan_id and dt.status = 0 and l.user_id = '" + username + "'";
+        String query = "select * from loan_detail ldt inner join loan l on ldt.loan_id = l.id and ldt.detail_status = 0 and l.account_id = '" + username + "'";
         LocalDate today = LocalDate.now();
         try (
                 Connection con = Connect.GetConnect();
@@ -537,18 +616,27 @@ public class BookLoan {
         return false;
     }
     
+	public String get_expired_date (String account_id){
+		try {
+			Connection conn = Connect.GetConnect();
+			PreparedStatement ps;
+			ResultSet rs;
+			String query4 = "EXEC SP_GetExpirationDate " + account_id + ", null, " + view.login.LoginFrame.branch_id;
+			ps = conn.prepareStatement(query4);
+			rs =ps.executeQuery();
+			rs.next();
+			return rs.getString(1);
+		} catch (SQLException ex) {
+			System.out.println("Lỗi lấy expiration_date");
+			Logger.getLogger(BookLoan.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		return "";
+	}
+	
     public Reader getReaderInformation(String username) {
-        String query = "select a.username,a.Full_Name,a.gender,a.date_of_birth,address.specific_address + ' - ' + ward.ward_name  + ' - ' + district.district_name + ' - ' + province.province_name as diachi,a.phone_number,a.email,a.registered_date from account a\n" +
-                                                                "inner join address\n" +
-                                                                "on address.address_id = a.address_id\n" +
-                                                                "left join ward\n" +
-                                                                "on address.ward_id = ward.ward_id\n" +
-                                                                "left join district\n" +
-                                                                "on ward.district_id = district.district_id\n" +
-                                                                "left join province\n" +
-                                                                "on district.province_id = province.province_id\n" +
-                                                                "where a.username = '" + username + "'";
+        String query = "select id, account_name, gender, date_of_birth, account_address, phone, email, registered_date from account where id = '" + username + "'";
         Reader reader = null;
+		String expiration_date = get_expired_date(username);
         try {
             Connection con = Connect.GetConnect();
             PreparedStatement ps = con.prepareStatement(query);

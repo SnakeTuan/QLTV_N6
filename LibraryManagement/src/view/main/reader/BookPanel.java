@@ -237,9 +237,10 @@ public class BookPanel extends javax.swing.JPanel {
         Connection ketNoi = Connect.GetConnect();
         Vector vt;
         try {
-            String sql = "SELECT b.id, c.category_name, b.title, b.Author, b.published_year, b.price FROM book b INNER JOIN category c ON b.category_id = c.id";
+            String sql = "SELECT b.id, c.category_name, b.title, b.Author, b.published_year, b.price FROM book b INNER JOIN category c ON b.category_id = c.id where branch_id = ?";
             PreparedStatement ps = ketNoi.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
+            ps.setString(1, view.login.LoginFrame.branch_id);
+			ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 vt = new Vector();
                 vt.add(rs.getString(1));
@@ -268,27 +269,6 @@ public class BookPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_jRadioButton_TitleActionPerformed
 
-    // lấy rate.
-    float getRate(int book_id) {
-        int count = 0;
-        int sum = 0;
-        Connection ketNoi = Connect.GetConnect();
-        try {
-            PreparedStatement ps = ketNoi.prepareStatement("select rate from feedback where book_id = ?");
-            ps.setInt(1, book_id);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                count ++;
-                sum += rs.getInt("rate");
-            }
-            ps.close();
-            rs.close();
-            ketNoi.close();
-            return (float) Math.round(((1.0)*sum/count) * 10) / 10;
-        } catch (SQLException ex) {
-        }
-        return sum;
-    }
     
     private void jRadioButton_AuthorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton_AuthorActionPerformed
         // TODO add your handling code here:

@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package view.main.librarian;
+package view.main.archivist;
 
+import view.main.librarian.*;
 import javax.swing.table.DefaultTableModel;
 import swing.UIController;
 import view.login.LoginFrame;
@@ -13,12 +14,12 @@ import view.login.LoginFrame;
  *
  * @author Admin
  */
-public class LibrarianMainFrame extends javax.swing.JFrame {
+public class LibrarianMainFrameTEST extends javax.swing.JFrame {
   
     /**
      * Creates new form LibrarianMainFrame
      */
-    public LibrarianMainFrame() {
+    public LibrarianMainFrameTEST() {
         initComponents();
         setLocationRelativeTo(null);
         jPanel_Borrow.setBackground(jPanel_Title.getBackground());
@@ -38,7 +39,6 @@ public class LibrarianMainFrame extends javax.swing.JFrame {
         chooseReaderPanel1 = new view.main.librarian.ChooseReaderPanel();
         readerPanel = new view.main.librarian.ReaderPanel();
         profilePanel = new view.profile.ProfilePanel();
-        bookPanel1 = new view.main.archivist.BookPanel();
         jPanel_Title = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -54,12 +54,9 @@ public class LibrarianMainFrame extends javax.swing.JFrame {
         jPanel_Reader = new javax.swing.JPanel();
         jSeparator3 = new javax.swing.JSeparator();
         jLabel_Reader = new javax.swing.JLabel();
-        jPanel_Book = new javax.swing.JPanel();
+        jPanel_Profile = new javax.swing.JPanel();
         jSeparator4 = new javax.swing.JSeparator();
-        jLabel_book = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
         jLabel_Profile = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Library Management Program");
@@ -69,7 +66,6 @@ public class LibrarianMainFrame extends javax.swing.JFrame {
         jPanel_CardLayout.add(chooseReaderPanel1, "choose");
         jPanel_CardLayout.add(readerPanel, "reader");
         jPanel_CardLayout.add(profilePanel, "profile");
-        jPanel_CardLayout.add(bookPanel1, "book");
 
         getContentPane().add(jPanel_CardLayout, java.awt.BorderLayout.CENTER);
 
@@ -172,29 +168,9 @@ public class LibrarianMainFrame extends javax.swing.JFrame {
 
         jPanel5.add(jPanel_Reader);
 
-        jPanel_Book.setBackground(new java.awt.Color(0, 204, 204));
-        jPanel_Book.setLayout(new java.awt.BorderLayout());
-        jPanel_Book.add(jSeparator4, java.awt.BorderLayout.SOUTH);
-
-        jLabel_book.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel_book.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel_book.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel_book.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/book.png"))); // NOI18N
-        jLabel_book.setText("Book");
-        jLabel_book.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jLabel_book.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jLabel_book.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel_bookMouseClicked(evt);
-            }
-        });
-        jPanel_Book.add(jLabel_book, java.awt.BorderLayout.CENTER);
-
-        jPanel5.add(jPanel_Book);
-
-        jPanel_Side.add(jPanel5, java.awt.BorderLayout.NORTH);
-
-        jPanel1.setBackground(new java.awt.Color(0, 204, 204));
+        jPanel_Profile.setBackground(new java.awt.Color(0, 204, 204));
+        jPanel_Profile.setLayout(new java.awt.BorderLayout());
+        jPanel_Profile.add(jSeparator4, java.awt.BorderLayout.SOUTH);
 
         jLabel_Profile.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel_Profile.setForeground(new java.awt.Color(255, 255, 255));
@@ -208,28 +184,11 @@ public class LibrarianMainFrame extends javax.swing.JFrame {
                 jLabel_ProfileMouseClicked(evt);
             }
         });
+        jPanel_Profile.add(jLabel_Profile, java.awt.BorderLayout.CENTER);
 
-        jPanel2.setBackground(new java.awt.Color(0, 204, 204));
+        jPanel5.add(jPanel_Profile);
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel_Profile, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jLabel_Profile, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-
-        jPanel_Side.add(jPanel1, java.awt.BorderLayout.CENTER);
+        jPanel_Side.add(jPanel5, java.awt.BorderLayout.NORTH);
 
         getContentPane().add(jPanel_Side, java.awt.BorderLayout.WEST);
 
@@ -241,8 +200,7 @@ public class LibrarianMainFrame extends javax.swing.JFrame {
         jPanel_Borrow.setBackground(jPanel_Title.getBackground());
         jPanel_Return.setBackground(jPanel_Side.getBackground());
         jPanel_Reader.setBackground(jPanel_Side.getBackground());
-        jPanel_Book.setBackground(jPanel_Side.getBackground());
-		jPanel1.setBackground(jPanel_Side.getBackground());
+        jPanel_Profile.setBackground(jPanel_Side.getBackground());
         UIController.showCardLayout("choose", jPanel_CardLayout);
         chooseReaderPanel1.setFlag(1);
     }//GEN-LAST:event_jLabel_BorrowMouseClicked
@@ -252,8 +210,7 @@ public class LibrarianMainFrame extends javax.swing.JFrame {
         jPanel_Return.setBackground(jPanel_Title.getBackground());
         jPanel_Borrow.setBackground(jPanel_Side.getBackground());
         jPanel_Reader.setBackground(jPanel_Side.getBackground());
-        jPanel_Book.setBackground(jPanel_Side.getBackground());
-		jPanel1.setBackground(jPanel_Side.getBackground());
+        jPanel_Profile.setBackground(jPanel_Side.getBackground());
         UIController.showCardLayout("choose", jPanel_CardLayout);
         chooseReaderPanel1.setFlag(2);
     }//GEN-LAST:event_jLabel_ReturnMouseClicked
@@ -263,15 +220,13 @@ public class LibrarianMainFrame extends javax.swing.JFrame {
         jPanel_Reader.setBackground(jPanel_Title.getBackground());
         jPanel_Borrow.setBackground(jPanel_Side.getBackground());
         jPanel_Return.setBackground(jPanel_Side.getBackground());
-        jPanel_Book.setBackground(jPanel_Side.getBackground());
-		jPanel1.setBackground(jPanel_Side.getBackground());
+        jPanel_Profile.setBackground(jPanel_Side.getBackground());
         UIController.showCardLayout("reader", jPanel_CardLayout);
     }//GEN-LAST:event_jLabel_ReaderMouseClicked
 
     private void jLabel_ProfileMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel_ProfileMouseClicked
         // TODO add your handling code here:
-		jPanel1.setBackground(jPanel_Title.getBackground());
-        jPanel_Book.setBackground(jPanel_Side.getBackground());
+        jPanel_Profile.setBackground(jPanel_Title.getBackground());
         jPanel_Borrow.setBackground(jPanel_Side.getBackground());
         jPanel_Return.setBackground(jPanel_Side.getBackground());
         jPanel_Reader.setBackground(jPanel_Side.getBackground());
@@ -283,15 +238,6 @@ public class LibrarianMainFrame extends javax.swing.JFrame {
         this.dispose();
         new LoginFrame().setVisible(true);
     }//GEN-LAST:event_jLabel_LogOutMouseClicked
-
-    private void jLabel_bookMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel_bookMouseClicked
-		jPanel_Book.setBackground(jPanel_Title.getBackground());
-        jPanel_Borrow.setBackground(jPanel_Side.getBackground());
-        jPanel_Return.setBackground(jPanel_Side.getBackground());
-        jPanel_Reader.setBackground(jPanel_Side.getBackground());
-		jPanel1.setBackground(jPanel_Side.getBackground());
-		UIController.showCardLayout("book", jPanel_CardLayout);
-    }//GEN-LAST:event_jLabel_bookMouseClicked
 
     /**
      * @param args the command line arguments
@@ -310,20 +256,21 @@ public class LibrarianMainFrame extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(LibrarianMainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LibrarianMainFrameTEST.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(LibrarianMainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LibrarianMainFrameTEST.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(LibrarianMainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LibrarianMainFrameTEST.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(LibrarianMainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LibrarianMainFrameTEST.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new LibrarianMainFrame().setVisible(true);
+                new LibrarianMainFrameTEST().setVisible(true);
             }
         });
     }
@@ -331,7 +278,6 @@ public class LibrarianMainFrame extends javax.swing.JFrame {
    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private view.main.archivist.BookPanel bookPanel1;
     private view.main.librarian.ChooseReaderPanel chooseReaderPanel1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -340,13 +286,10 @@ public class LibrarianMainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel_Profile;
     private javax.swing.JLabel jLabel_Reader;
     private javax.swing.JLabel jLabel_Return;
-    private javax.swing.JLabel jLabel_book;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel_Book;
     private javax.swing.JPanel jPanel_Borrow;
     private javax.swing.JPanel jPanel_CardLayout;
+    private javax.swing.JPanel jPanel_Profile;
     private javax.swing.JPanel jPanel_Reader;
     private javax.swing.JPanel jPanel_Return;
     private javax.swing.JPanel jPanel_Side;

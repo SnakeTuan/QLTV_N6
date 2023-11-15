@@ -12,10 +12,9 @@ public class Category {
     public Category() {
     }
 
-    public Category(int id, String name, String note) {
+    public Category(int id, String name) {
         this.id = id;
         this.name = name;
-        this.note = note;
     }
 
     public int getId() {
@@ -32,14 +31,6 @@ public class Category {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
     }
 
     @Override

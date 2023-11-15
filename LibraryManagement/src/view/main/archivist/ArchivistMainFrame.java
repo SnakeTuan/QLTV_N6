@@ -47,6 +47,7 @@ public class ArchivistMainFrame extends javax.swing.JFrame {
         jPanel_Profile = new javax.swing.JPanel();
         jSeparator4 = new javax.swing.JSeparator();
         jLabel_Profile = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Library Management Program");
@@ -138,6 +139,7 @@ public class ArchivistMainFrame extends javax.swing.JFrame {
         jPanel5.add(jPanel_Profile);
 
         jPanel_Side.add(jPanel5, java.awt.BorderLayout.NORTH);
+        jPanel_Side.add(jPanel1, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(jPanel_Side, java.awt.BorderLayout.WEST);
 
@@ -206,6 +208,7 @@ public class ArchivistMainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel_Book;
     private javax.swing.JLabel jLabel_LogOut;
     private javax.swing.JLabel jLabel_Profile;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel_Book;
     private javax.swing.JPanel jPanel_CardLayout;

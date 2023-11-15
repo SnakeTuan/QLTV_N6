@@ -26,15 +26,7 @@ public class BookBorrowPanel extends javax.swing.JPanel {
 
     private JTableFunction function;
     private DefaultTableModel model;
-    private String queryLoadData = "select b.book_id, b.title, b.publish_date, b.price, a.name, p.name, c.category\n" +
-                                    "from loan l\n" +
-                                    "inner join loan_detail dt on l.loan_id = dt.loan_id\n" +
-                                    "inner join book b on b.book_id = dt.book_id\n" +
-                                    "inner join author a on b.author_id = a.author_id\n" +
-                                    "inner join publisher p on b.publisher_id = p.publisher_id\n" +
-                                    "inner join category c on b.category_id = c.category_id\n" +
-                                    "where l.user_id = '" + LoginFrame.username + "'\n" +
-                                    "and dt.status = 0";
+    private String queryLoadData = "select b.id, c.category_name, b.title, b.Author, b.published_year, b.price from loan l inner join loan_detail ld on l.id = ld.loan_id inner join book b on ld.book_id = b.id inner join category c on c.id = b.category_id where l.account_id = '" + view.login.LoginFrame.account_id + "' and ld.detail_status = 0";
     
     /**
      * Creates new form BookBorrowPanel
@@ -58,20 +50,11 @@ public class BookBorrowPanel extends javax.swing.JPanel {
 
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
         jLabel_NgayMuon = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         jLabel_HanTra = new javax.swing.JLabel();
         jLabel_Phat = new javax.swing.JLabel();
-        jSlider_Rate = new javax.swing.JSlider();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
-        jButton_Send = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable_Book = new javax.swing.JTable();
 
@@ -82,9 +65,6 @@ public class BookBorrowPanel extends javax.swing.JPanel {
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel2.setText("Ngày mượn:");
-
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel6.setText("Rate");
 
         jLabel_NgayMuon.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
 
@@ -99,78 +79,23 @@ public class BookBorrowPanel extends javax.swing.JPanel {
         jLabel_Phat.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel_Phat.setText("Đã trễ ... phải nộp phạt ...");
 
-        jSlider_Rate.setBackground(new java.awt.Color(255, 255, 255));
-        jSlider_Rate.setMajorTickSpacing(1);
-        jSlider_Rate.setMaximum(5);
-        jSlider_Rate.setPaintTicks(true);
-
-        jLabel1.setForeground(new java.awt.Color(153, 153, 153));
-        jLabel1.setText("1");
-
-        jLabel3.setForeground(new java.awt.Color(153, 153, 153));
-        jLabel3.setText("2");
-
-        jLabel4.setForeground(new java.awt.Color(153, 153, 153));
-        jLabel4.setText("3");
-
-        jLabel5.setForeground(new java.awt.Color(153, 153, 153));
-        jLabel5.setText("4");
-
-        jLabel9.setForeground(new java.awt.Color(153, 153, 153));
-        jLabel9.setText("5");
-
-        jLabel13.setForeground(new java.awt.Color(153, 153, 153));
-        jLabel13.setText("0");
-
-        jButton_Send.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
-        jButton_Send.setText("Send");
-        jButton_Send.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton_SendActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel_NgayMuon, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(81, 81, 81)
-                        .addComponent(jLabel8)
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel_HanTra, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(81, 81, 81)
-                        .addComponent(jLabel10)
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel_Phat, javax.swing.GroupLayout.DEFAULT_SIZE, 485, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(20, 20, 20)
-                                .addComponent(jLabel13)
-                                .addGap(33, 33, 33)
-                                .addComponent(jLabel1)
-                                .addGap(31, 31, 31)
-                                .addComponent(jLabel3)
-                                .addGap(33, 33, 33)
-                                .addComponent(jLabel4)
-                                .addGap(30, 30, 30)
-                                .addComponent(jLabel5)
-                                .addGap(30, 30, 30)
-                                .addComponent(jLabel9))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(jSlider_Rate, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jButton_Send)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addComponent(jLabel2)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel_NgayMuon, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(81, 81, 81)
+                .addComponent(jLabel8)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel_HanTra, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(81, 81, 81)
+                .addComponent(jLabel10)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel_Phat, javax.swing.GroupLayout.DEFAULT_SIZE, 485, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -183,20 +108,7 @@ public class BookBorrowPanel extends javax.swing.JPanel {
                     .addComponent(jLabel8)
                     .addComponent(jLabel_HanTra)
                     .addComponent(jLabel10))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel6)
-                    .addComponent(jSlider_Rate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton_Send))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel9)
-                    .addComponent(jLabel5)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel13))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(85, Short.MAX_VALUE))
         );
 
         jTable_Book.setModel(new javax.swing.table.DefaultTableModel(
@@ -204,11 +116,11 @@ public class BookBorrowPanel extends javax.swing.JPanel {
 
             },
             new String [] {
-                "ID", "Title", "Publish date", "Price", "Author", "Publisher", "Category"
+                "ID", "Category", "Title", "Author", "Published year", "Price"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -251,58 +163,12 @@ public class BookBorrowPanel extends javax.swing.JPanel {
             return;
         
         String bookID = model.getValueAt(selectedRow, 0).toString();
-        getBorrowInformation(LoginFrame.username, bookID);
+        getBorrowInformation(view.login.LoginFrame.account_id, bookID);
     }//GEN-LAST:event_jTable_BookMouseClicked
 
-    private void jButton_SendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_SendActionPerformed
-        // TODO add your handling code here:
-        int selectedRow = jTable_Book.getSelectedRow();
-        if(selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn sách!");
-            return;
-        }
-        String bookID = model.getValueAt(selectedRow, 0).toString();
-        int rate = jSlider_Rate.getValue();
-        System.out.println(rate);
-        feedback(LoginFrame.username, bookID, rate);
-        JOptionPane.showMessageDialog(this, "Gửi rate thành công!");
-    }//GEN-LAST:event_jButton_SendActionPerformed
-
-    public void feedback(String username, String bookID, int rate) {
-        String query = "declare @user_id nvarchar(50)\n" +
-                        "declare @book_id int\n" +
-                        "declare @rate int\n" +
-                        "\n" +
-                        "select @user_id = '" + username + "'\n" +
-                        "select @book_id = " + bookID + "\n" +
-                        "select @rate = " + rate + "\n" +
-                        "\n" +
-                        "if exists	(select *\n" +
-                        "			from feedback\n" +
-                        "			where user_id = @user_id\n" +
-                        "			and book_id = @book_id)\n" +
-                        "\n" +
-                        "	update feedback set rate = @rate where user_id = @user_id and book_id = @book_id\n" +
-                        "\n" +
-                        "else insert into feedback values (@user_id, @book_id, @rate)";
-        
-        try {
-            Connection con = Connect.GetConnect();
-            PreparedStatement ps = con.prepareStatement(query);
-            ps.executeUpdate();
-            ps.close();
-            con.close();
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-        }              
-    }
     
     public void getBorrowInformation(String username, String bookID) {
-        String query = "select loan.date_start, DATEADD(day, r.max_rental_day, loan.date_start), r.fine\n" +
-                        "from loan\n" +
-                        "inner join [rule] r on loan.rule_id = r.rule_id\n" +
-                        "inner join loan_detail dt on loan.loan_id = dt.loan_id\n" +
-                        "where dt.status = 0 and loan.user_id = '" + username + "' and dt.book_id = " + bookID;
+        String query = "select l.date_start, ld.date_end, r.overdue_fine from loan l inner join loan_detail ld on ld.loan_id = l.id inner join loan_rule r on l.loan_rule_id = r.id where ld.book_id = ? and l.account_id = ?";
         int overDueFines = 0;
         String borrowDate = null;
         String expirationDate = null;
@@ -310,6 +176,8 @@ public class BookBorrowPanel extends javax.swing.JPanel {
         try {
             Connection con = Connect.GetConnect();
             PreparedStatement ps = con.prepareStatement(query);
+			ps.setString(1, bookID);
+			ps.setString(2, username);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 borrowDate = rs.getString(1);
@@ -339,23 +207,14 @@ public class BookBorrowPanel extends javax.swing.JPanel {
     }    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton_Send;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel jLabel_HanTra;
     private javax.swing.JLabel jLabel_NgayMuon;
     private javax.swing.JLabel jLabel_Phat;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSlider jSlider_Rate;
     private javax.swing.JTable jTable_Book;
     // End of variables declaration//GEN-END:variables
 }

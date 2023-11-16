@@ -64,21 +64,14 @@ public class ChartController {
     {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         
-        String query = "select top 10  c.category, num = count(c.category)\n" +
-                                "from loan l, loan_detail dt, book b, category c\n" +
-                                "where l.loan_id = dt.loan_id\n" +
-                                "and dt.book_id = b.book_id\n" +
-                                "and b.category_id = c.category_id\n" +
-                                "and year(l.date_start) = " + year + "\n" +
-                                "group by c.category\n" +
-                                "order by num desc";
+        String query = "select top 10 c.category_name, num = count(c.category_name) from loan l , loan_detail ld, book b, category c where l.id = ld.loan_id and ld.book_id = b.id and b.category_id = c.id and year(l.date_start) = '" + year + "' group by c.category_name order by num desc";
         
         try (
             Connection con = Connect.GetConnect();
             PreparedStatement ps = con.prepareStatement(query);
             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                dataset.addValue(rs.getInt("num"), "Genres", rs.getString("category"));
+                dataset.addValue(rs.getInt("num"), "Genres", rs.getString("category_name"));
             }
         } catch (SQLException ex) {
             Logger.getLogger(BookLoan.class.getName()).log(Level.SEVERE, null, ex);
@@ -101,21 +94,14 @@ public class ChartController {
     {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         
-        String query = "select top 10 a.name, num = count(a.name)\n" +
-                        "from loan l, loan_detail dt, book b, author a\n" +
-                        "where l.loan_id = dt.loan_id\n" +
-                        "and dt.book_id = b.book_id\n" +
-                        "and b.author_id = a.author_id\n" +
-                        "and year(l.date_start) = " + year + "\n" +
-                        "group by a.name\n" +
-                        "order by num desc";
+        String query = "select top 10 b.Author, num = count(b.Author) from loan l, loan_detail ld, book b where l.id = ld.loan_id and ld.book_id = b.id and year(l.date_start) = '" + year + "' group by b.Author order by num desc";
         
         try (
             Connection con = Connect.GetConnect();
             PreparedStatement ps = con.prepareStatement(query);
             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                dataset.addValue(rs.getInt("num"), "Author", rs.getString("name"));
+                dataset.addValue(rs.getInt("num"), "Author", rs.getString("Author"));
             }
         } catch (SQLException ex) {
             Logger.getLogger(BookLoan.class.getName()).log(Level.SEVERE, null, ex);
@@ -138,28 +124,21 @@ public class ChartController {
     {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         
-        String query = "select top 10 p.name, num = count(p.name)\n" +
-                        "from loan l, loan_detail dt, book b, publisher p\n" +
-                        "where l.loan_id = dt.loan_id\n" +
-                        "and dt.book_id = b.book_id\n" +
-                        "and b.publisher_id = p.publisher_id\n" +
-                        "and year(l.date_start) = " + year + "\n" +
-                        "group by p.name\n" +
-                        "order by num desc";
+        String query = "select top 10 b.Author, num = count(b.Author) from loan l, loan_detail ld, book b where l.id = ld.loan_id and ld.book_id = b.id and year(l.date_start) = '" + year + "' group by b.Author order by num desc";
         
         try (
             Connection con = Connect.GetConnect();
             PreparedStatement ps = con.prepareStatement(query);
             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                dataset.addValue(rs.getInt("num"), "Publisher", rs.getString("name"));
+                dataset.addValue(rs.getInt("num"), "Author", rs.getString("Author"));
             }
         } catch (SQLException ex) {
             Logger.getLogger(BookLoan.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        String title = "top 10 most borrowed publishers in " + String.valueOf(year);
-        JFreeChart barChart = ChartFactory.createBarChart(title.toUpperCase(), "Publisher", "Number", dataset, PlotOrientation.VERTICAL, false, true, false);
+        String title = "top 10 most borrowed Authors in " + String.valueOf(year);
+        JFreeChart barChart = ChartFactory.createBarChart(title.toUpperCase(), "Author", "Number", dataset, PlotOrientation.VERTICAL, false, true, false);
     
         ChartPanel chartPanel = new ChartPanel(barChart);
         chartPanel.setPreferredSize(new Dimension(panel.getWidth(), 550));

@@ -21,7 +21,7 @@ public class Revenue {
     
     public long CalculateTotalRevenue ()
     {
-        String query = "select * from Get_TotalRevenueFromExtend";
+        String query = "select sum(amount) from extension";
         long result;
         
         Connection conn = Connect.GetConnect();
@@ -33,6 +33,7 @@ public class Revenue {
             rs = ps.executeQuery();
             rs.next();
             result = rs.getLong(1);
+			System.out.print("Tong tien gia han: " + result );
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Lấy doanh thu thất bại, hãy thử lại sau", "Lỗi truy vấn", JOptionPane.WARNING_MESSAGE);
             System.out.println("something wrong in view Get_TotalRevenueFromExtend" + e.getMessage());

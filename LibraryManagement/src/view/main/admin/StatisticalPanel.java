@@ -72,7 +72,6 @@ public class StatisticalPanel extends javax.swing.JPanel {
         jYearChooser2 = new com.toedter.calendar.JYearChooser();
         jRadioButton_Category = new javax.swing.JRadioButton();
         jRadioButton_Author = new javax.swing.JRadioButton();
-        jRadioButton_Publisher = new javax.swing.JRadioButton();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         JTable_OverdueList = new javax.swing.JTable();
@@ -263,7 +262,7 @@ public class StatisticalPanel extends javax.swing.JPanel {
         );
         jPanel_CategoryChartLayout.setVerticalGroup(
             jPanel_CategoryChartLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 615, Short.MAX_VALUE)
+            .addGap(0, 622, Short.MAX_VALUE)
         );
 
         jYearChooser2.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
@@ -291,15 +290,6 @@ public class StatisticalPanel extends javax.swing.JPanel {
             }
         });
 
-        buttonGroup1.add(jRadioButton_Publisher);
-        jRadioButton_Publisher.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jRadioButton_Publisher.setText("Publisher");
-        jRadioButton_Publisher.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                jRadioButton_PublisherStateChanged(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -313,9 +303,7 @@ public class StatisticalPanel extends javax.swing.JPanel {
                 .addComponent(jRadioButton_Category)
                 .addGap(76, 76, 76)
                 .addComponent(jRadioButton_Author)
-                .addGap(65, 65, 65)
-                .addComponent(jRadioButton_Publisher)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 308, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 461, Short.MAX_VALUE)
                 .addComponent(jYearChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(445, 445, 445))
         );
@@ -326,8 +314,7 @@ public class StatisticalPanel extends javax.swing.JPanel {
                     .addComponent(jYearChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jRadioButton_Category)
-                        .addComponent(jRadioButton_Author)
-                        .addComponent(jRadioButton_Publisher)))
+                        .addComponent(jRadioButton_Author)))
                 .addGap(18, 18, 18)
                 .addComponent(jPanel_CategoryChart, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
@@ -479,8 +466,8 @@ public class StatisticalPanel extends javax.swing.JPanel {
             ChartController.Instance.SetDataToCategoryChart(jPanel_CategoryChart, jYearChooser2.getYear());
         if(jRadioButton_Author.isSelected())
             ChartController.Instance.SetDataToAuthorChart(jPanel_CategoryChart, jYearChooser2.getYear());
-        if(jRadioButton_Publisher.isSelected())
-            ChartController.Instance.SetDataToPublisherChart(jPanel_CategoryChart, jYearChooser2.getYear());
+//        if(jRadioButton_Publisher.isSelected())
+//            ChartController.Instance.SetDataToPublisherChart(jPanel_CategoryChart, jYearChooser2.getYear());
     }//GEN-LAST:event_jYearChooser2PropertyChange
 
     private void jRadioButton_CategoryStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jRadioButton_CategoryStateChanged
@@ -494,12 +481,6 @@ public class StatisticalPanel extends javax.swing.JPanel {
         if(jRadioButton_Author.isSelected())
             ChartController.Instance.SetDataToAuthorChart(jPanel_CategoryChart, jYearChooser2.getYear());
     }//GEN-LAST:event_jRadioButton_AuthorStateChanged
-
-    private void jRadioButton_PublisherStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jRadioButton_PublisherStateChanged
-        // TODO add your handling code here:
-        if(jRadioButton_Publisher.isSelected())
-            ChartController.Instance.SetDataToPublisherChart(jPanel_CategoryChart, jYearChooser2.getYear());
-    }//GEN-LAST:event_jRadioButton_PublisherStateChanged
 
     private void jButton_ClearSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_ClearSearchActionPerformed
         // TODO add your handling code here:
@@ -560,7 +541,6 @@ public class StatisticalPanel extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel_CategoryChart;
     private javax.swing.JRadioButton jRadioButton_Author;
     private javax.swing.JRadioButton jRadioButton_Category;
-    private javax.swing.JRadioButton jRadioButton_Publisher;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;

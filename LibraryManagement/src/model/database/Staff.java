@@ -11,22 +11,24 @@ package model.database;
  */
 public class Staff {
     private String username,password,fullName, gender,dateOfBirth,registeredDate;
-    private int address_id;
+    private String address;
     private String phoneNumber, email;
+	private String branch_id;
     private int roleId, status;
 
     public Staff() {
     }
 
     // thêm mới.
-    public Staff(String username, String password, String fullName, String gender, String dateOfBirth, String registeredDate, int address_id, String phoneNumber, String email, int roleId, int status) {
-        this.username = username;
+    public Staff(String branch_id, String username, String password, String fullName, String gender, String dateOfBirth, String registeredDate, String address, String phoneNumber, String email, int roleId, int status) {
+        this.branch_id = branch_id;
+		this.username = username;
         this.password = password;
         this.fullName = fullName;
         this.gender = gender;
         this.dateOfBirth = dateOfBirth;
         this.registeredDate = registeredDate;
-        this.address_id = address_id;
+        this.address = address;
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.roleId = roleId;
@@ -34,17 +36,25 @@ public class Staff {
     }
 
     // dùng trong update.
-    public Staff(String username, String fullName, String gender, String dateOfBirth,int address_id, String phoneNumber, String email , int roleId) {
+    public Staff(String username, String fullName, String gender, String dateOfBirth,String address, String phoneNumber, String email , int roleId) {
         this.username = username;
         this.fullName = fullName;
         this.gender = gender;
-        this.address_id = address_id;
+        this.address = address;
         this.dateOfBirth = dateOfBirth;
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.roleId = roleId;
     }
 
+    public String getBranch_id() {
+        return branch_id;
+    }
+
+    public void setBranch_id(String branch_id) {
+        this.branch_id = branch_id;
+    }
+	
     public String getUsername() {
         return username;
     }
@@ -93,12 +103,12 @@ public class Staff {
         this.registeredDate = registeredDate;
     }
 
-    public int getAddress_id() {
-        return address_id;
+    public String getAddress() {
+        return address;
     }
 
-    public void setAddress_id(int address_id) {
-        this.address_id = address_id;
+    public void setAddress(String address_id) {
+        this.address = address;
     }
 
     public String getPhoneNumber() {

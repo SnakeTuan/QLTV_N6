@@ -223,6 +223,11 @@ public class RulePanel extends javax.swing.JPanel {
 
         jTextField_OldID.setEditable(false);
         jTextField_OldID.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        jTextField_OldID.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField_OldIDActionPerformed(evt);
+            }
+        });
 
         jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel15.setText("Max rental day");
@@ -440,6 +445,7 @@ public class RulePanel extends javax.swing.JPanel {
 
     private void jButton_SaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_SaveActionPerformed
         // TODO add your handling code here:
+		int ma = Integer.parseInt(jTextField_OldID.getText()) + 1;
         int soNgayMuonToiDa = (int) jSpinner_NewMaxDay.getValue();
         System.out.println(soNgayMuonToiDa);
         int soSachMuonToiDa = (int) jSpinner_NewMaxBook.getValue();        
@@ -452,7 +458,7 @@ public class RulePanel extends javax.swing.JPanel {
         } else if (luaChon == JOptionPane.OK_OPTION) {
             SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
             String ngayThayDoi = dateFormatter.format(new java.util.Date());
-            Rule newRule = new Rule(0, soNgayMuonToiDa, soSachMuonToiDa, phatQuaHan, phatHongMat, ngayThayDoi);
+            Rule newRule = new Rule(ma, soNgayMuonToiDa, soSachMuonToiDa, phatQuaHan, phatHongMat, ngayThayDoi);
             if(ruleController.insertRule(newRule) == 1) {
                 JOptionPane.showMessageDialog(this, "Cập nhập quy định thư viện thành công!");
                 currentRule = bookLoan.getCurrentRule();
@@ -482,6 +488,10 @@ public class RulePanel extends javax.swing.JPanel {
         setRule(currentRule);
         jDateChooser_Date.setDate(null);
     }//GEN-LAST:event_jButton_ResetActionPerformed
+
+    private void jTextField_OldIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField_OldIDActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField_OldIDActionPerformed
 
     private void setRule(Rule rule) {
         

@@ -433,18 +433,8 @@ public class StatisticalPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void getOverdueList() {
-        String query = "select a.Full_Name, a.phone_number, dt.book_id, b.title, b.publish_date, l.date_start, expiration_date = DATEADD(day, r.max_rental_day, l.date_start)\n" +
-                        "from loan l\n" +
-                        "inner join account a\n" +
-                        "on l.user_id = a.username\n" +
-                        "inner join loan_detail dt\n" +
-                        "on l.loan_id = dt.loan_id\n" +
-                        "inner join [rule] r\n" +
-                        "on l.rule_id = r.rule_id\n" +
-                        "inner join book b\n" +
-                        "on dt.book_id = b.book_id\n" +
-                        "where dt.status = 0\n" +
-                        "and DATEADD(day, r.max_rental_day, l.date_start) < GETDATE()";
+		
+        String query = "select a.account_name, a.phone, ld.book_id, b.title, b.published_year, l.date_start, ld.date_end from loan l inner join account a on a.id = l.account_id inner join loan_detail ld on ld.loan_id = l.id inner join loan_rule r on l.loan_rule_id = r.id inner join book b on b.id = ld.book_id where ld.detail_status = 0 and ld.date_end < GETDATE()";
         tbFunction.LoadData(JTable_OverdueList, query);
     }
     

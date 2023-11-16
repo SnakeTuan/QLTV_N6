@@ -55,32 +55,32 @@ public class StaffPanel extends javax.swing.JPanel {
     public StaffPanel() {
         initComponents();
         getStaff();
-        loadAddress();
+        loadBranch();
         loadRole();
         UIController.setDefaultTableHeader(jTable_Staff);
         setEditableForAll(false);
     }
 
-    void loadAddress() {
+    void loadBranch() {
         Connection ketNoi = Connect.GetConnect();
         try {
-            PreparedStatement ps = ketNoi.prepareStatement("select province_name from province");
+            PreparedStatement ps = ketNoi.prepareStatement("select branch_name from branch");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                jComboBox_Province.addItem(rs.getString(1));
+                jComboBox_Branch.addItem(rs.getString(1));
             }
             ps.close();
             rs.close();
             ketNoi.close();
         } catch (SQLException ex) {
-            System.out.println("Lỗi lấy địa chỉ");
+            System.out.println("Lỗi lấy chi nhánh");
         }
     }
 
     void loadRole() {
         Connection ketNoi = Connect.GetConnect();
         try {
-            PreparedStatement ps = ketNoi.prepareStatement("select role from role where role.role_id != 1");
+            PreparedStatement ps = ketNoi.prepareStatement("select account_name from account_role where id != 1");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 jComboBox_Role.addItem(rs.getString(1));
@@ -100,17 +100,7 @@ public class StaffPanel extends javax.swing.JPanel {
         Connection ketNoi = Connect.GetConnect();
         Vector vt;
         try {
-            PreparedStatement ps = ketNoi.prepareStatement("select a.username,a.Full_Name,role.role,a.gender,a.date_of_birth,address.specific_address + ' - ' + ward.ward_name  + ' - ' + district.district_name + ' - ' + province.province_name as diachi,a.phone_number,a.email,a.registered_date from account a\n"
-                    + "  inner join address\n"
-                    + "  on address.address_id = a.address_id\n"
-                    + "  left join ward\n"
-                    + "  on address.ward_id = ward.ward_id\n"
-                    + "  left join district\n"
-                    + "  on ward.district_id = district.district_id\n"
-                    + "  left join province\n"
-                    + "  on district.province_id = province.province_id\n"
-                    + "	left join role\n"
-                    + " on role.role_id = a.role_id where role.role_id != 1 and a.status = 1");
+            PreparedStatement ps = ketNoi.prepareStatement("select a.id, b.id, a.account_name, r.account_name, a.gender, a.date_of_birth, a.account_address, a.phone, a.email, a.registered_date from account a inner join branch b on a.branch_id = b.id inner join account_role r on a.account_role_id = r.id where r.id != 1 and a.account_status = 1");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 vt = new Vector();
@@ -118,11 +108,12 @@ public class StaffPanel extends javax.swing.JPanel {
                 vt.add(rs.getString(2));
                 vt.add(rs.getString(3));
                 vt.add(rs.getString(4));
-                vt.add(rs.getDate(5));
-                vt.add(rs.getString(6));
+				vt.add(rs.getString(5));
+                vt.add(rs.getDate(6));
                 vt.add(rs.getString(7));
                 vt.add(rs.getString(8));
-                vt.add(rs.getDate(9));
+                vt.add(rs.getString(9));
+                vt.add(rs.getDate(10));
                 dtm.addRow(vt);
             }
             jTable_Staff.setModel(dtm);
@@ -151,10 +142,7 @@ public class StaffPanel extends javax.swing.JPanel {
         jLabel3 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
         jTextField_ID = new javax.swing.JTextField();
         jRadioButton_Male = new javax.swing.JRadioButton();
         jRadioButton_Female = new javax.swing.JRadioButton();
@@ -164,9 +152,7 @@ public class StaffPanel extends javax.swing.JPanel {
         jTextField_Email = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
-        jComboBox_Province = new javax.swing.JComboBox<>();
-        jComboBox_District = new javax.swing.JComboBox<>();
-        jComboBox_Commune = new javax.swing.JComboBox<>();
+        jComboBox_Branch = new javax.swing.JComboBox<>();
         jDateChooser_DateOfBirth = new com.toedter.calendar.JDateChooser();
         jComboBox_Role = new javax.swing.JComboBox<>();
         jLabel16 = new javax.swing.JLabel();
@@ -208,17 +194,8 @@ public class StaffPanel extends javax.swing.JPanel {
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel8.setText("Email");
 
-        jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel10.setText("Address");
-
-        jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel11.setText("Province");
-
         jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel12.setText("District");
-
-        jLabel13.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel13.setText("Commune");
+        jLabel12.setText("Branch");
 
         jTextField_ID.setEditable(false);
         jTextField_ID.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
@@ -251,21 +228,12 @@ public class StaffPanel extends javax.swing.JPanel {
         jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel15.setText("Role");
 
-        jComboBox_Province.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jComboBox_Province.addActionListener(new java.awt.event.ActionListener() {
+        jComboBox_Branch.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        jComboBox_Branch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox_ProvinceActionPerformed(evt);
+                jComboBox_BranchActionPerformed(evt);
             }
         });
-
-        jComboBox_District.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jComboBox_District.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox_DistrictActionPerformed(evt);
-            }
-        });
-
-        jComboBox_Commune.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
 
         jDateChooser_DateOfBirth.setDateFormatString("yyyy-MM-dd");
         jDateChooser_DateOfBirth.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
@@ -328,23 +296,14 @@ public class StaffPanel extends javax.swing.JPanel {
                         .addComponent(jLabel16)
                         .addGap(18, 18, 18)
                         .addComponent(jTextField_Address)))
-                .addGap(47, 47, 47)
+                .addGap(107, 107, 107)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel10)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel11)
-                        .addGap(12, 12, 12))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jLabel15)
-                        .addComponent(jLabel13)
-                        .addComponent(jLabel12)))
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jComboBox_Commune, 0, 160, Short.MAX_VALUE)
-                        .addComponent(jComboBox_District, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jComboBox_Role, 0, 160, Short.MAX_VALUE))
-                    .addComponent(jComboBox_Province, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel15)
+                    .addComponent(jLabel12))
+                .addGap(21, 21, 21)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jComboBox_Branch, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jComboBox_Role, 0, 160, Short.MAX_VALUE))
                 .addGap(177, 177, 177))
         );
         jPanel1Layout.setVerticalGroup(
@@ -354,11 +313,8 @@ public class StaffPanel extends javax.swing.JPanel {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel1)
-                        .addComponent(jLabel11)
                         .addComponent(jLabel2)
-                        .addComponent(jTextField_Name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel10)
-                        .addComponent(jComboBox_Province, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jTextField_Name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jTextField_ID, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -376,14 +332,9 @@ public class StaffPanel extends javax.swing.JPanel {
                             .addComponent(jTextField_Email, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel4)
                             .addComponent(jDateChooser_DateOfBirth, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel12)
-                            .addComponent(jComboBox_District, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel13)
-                            .addComponent(jComboBox_Commune, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel12)
+                        .addComponent(jComboBox_Branch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -516,11 +467,11 @@ public class StaffPanel extends javax.swing.JPanel {
 
             },
             new String [] {
-                "ID", "Name", "Role", "Gender", "Date of birth", "Adress", "Phone number", "Email", "Registered"
+                "ID", "Branch Id", "Name", "Role", "Gender", "Date of birth", "Adress", "Phone", "Email", "Registered"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false
+                false, true, false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -591,7 +542,7 @@ public class StaffPanel extends javax.swing.JPanel {
                         .addComponent(jButton_ImportExcel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton_ClearSearch, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 222, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 227, Short.MAX_VALUE)
                 .addGap(22, 22, 22))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -603,26 +554,28 @@ public class StaffPanel extends javax.swing.JPanel {
         jTextField_PhoneNumber.setText("");
         jTextField_Email.setText("");
         jTextField_ID.setText("");
-        jComboBox_Province.setSelectedIndex(0);
-        jComboBox_District.setSelectedIndex(0);
-        jComboBox_Commune.setSelectedIndex(0);
+        jComboBox_Branch.setSelectedIndex(0);
         jComboBox_Role.setSelectedIndex(0);
+		jTextField_Address.setText("");
     }
 
     public void setEditableForAll(boolean editable) {
+		jRadioButton_Other.setEnabled(editable);
+		jRadioButton_Female.setEnabled(editable);
+		jRadioButton_Male.setEnabled(editable);
+//		jTextField_ID.setEnabled(editable);
+		jTextField_Address.setEnabled(editable);
         jDateChooser_DateOfBirth.setEnabled(editable);
         jTextField_Name.setEditable(editable);
         jTextField_PhoneNumber.setEditable(editable);
         jTextField_Email.setEditable(editable);
-        jComboBox_Province.setEnabled(editable);
-        jComboBox_District.setEnabled(editable);
-        jComboBox_Commune.setEnabled(editable);
+        jComboBox_Branch.setEnabled(editable);
         jComboBox_Role.setEnabled(editable);
     }
 
     private boolean checkinput() {
         String id = jTextField_ID.getText();
-        String sqlId = "select * from account where username = '" + id + "'";
+        String sqlId = "select * from account where id = '" + id + "'";
         String sqlEmail = "select * from account where email = '" + jTextField_Email.getText() + "'";
         String sqlPhone = "select * from account where phone_number = '" + jTextField_PhoneNumber.getText() + "'";
         if ("".equals(id)) {
@@ -686,25 +639,7 @@ public class StaffPanel extends javax.swing.JPanel {
     }
 
     private void jButton_OKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_OKActionPerformed
-        // TODO add your handling code here:
-//        String username = jTextField_ID.getText();
-//        String Full_Name = jTextField_Name.getText();
-//        String genderEndlish = getSelectedButtonText(buttonGroup1);
-//        String gender = "";
-//        if (genderEndlish.equalsIgnoreCase("Male")) {
-//            gender = "Nam";
-//        } else if (genderEndlish.equalsIgnoreCase("Female")) {
-//            gender = "Nữ";
-//        } else {
-//            gender = "Khác";
-//        }
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//        String date_of_birth = sdf.format(jDateChooser_DateOfBirth.getDate());
-//        String specific_address = jTextField_Address.getText();
-//        String email = jTextField_Email.getText();
-//        String phone_number = jTextField_PhoneNumber.getText();
-//        int ward_id = getIdWard(jComboBox_Commune.getSelectedItem().toString(), jComboBox_District.getSelectedItem().toString(), jComboBox_Province.getSelectedItem().toString());
-//        String registeredDate = java.time.LocalDate.now().toString();
+
         if (mode == Mode.ADD) {
             if (checkinput() == true) {
                 String username = jTextField_ID.getText();
@@ -720,25 +655,19 @@ public class StaffPanel extends javax.swing.JPanel {
                 }
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 String date_of_birth = sdf.format(jDateChooser_DateOfBirth.getDate());
-                String specific_address = jTextField_Address.getText();
+                String address = jTextField_Address.getText();
                 String email = jTextField_Email.getText();
                 String phone_number = jTextField_PhoneNumber.getText();
-                int ward_id = getIdWard(jComboBox_Commune.getSelectedItem().toString(), jComboBox_District.getSelectedItem().toString(), jComboBox_Province.getSelectedItem().toString());
                 String registeredDate = java.time.LocalDate.now().toString();
-                
-                int address_id = getAddress_idBySpecific_address(ward_id, specific_address);
-                if (address_id == -1) {
-                    insertNewAddress(ward_id, specific_address);
-                    address_id = getAddress_idBySpecific_address(ward_id, specific_address);
-                }
-                
+                String branch = jComboBox_Branch.getSelectedItem().toString();
                 String role = jComboBox_Role.getSelectedItem().toString();
+				String branch_id = getIdBranch(branch);
                 int roleId = getIdRole(role);
                 
-                Staff s1 = new Staff(username, hash(username), Full_Name, gender, date_of_birth, registeredDate, address_id, phone_number, email, roleId, 1);
+                Staff s1 = new Staff(branch_id, username, "123", Full_Name, gender, date_of_birth, registeredDate, address, phone_number, email, roleId, 1);
                 boolean flag = insertAccount(s1);
                 if (flag != false) {
-                    JOptionPane.showMessageDialog(this, "Thêm nhân viên mới thành công!!!", "", JOptionPane.CLOSED_OPTION);
+                    JOptionPane.showMessageDialog(this, "Thêm nhân viên mới thành công!!! Password mặc định là 123", "", JOptionPane.CLOSED_OPTION);
                     getStaff();
                 } else {
                     JOptionPane.showMessageDialog(this, "Thêm nhân viên mới thất bại!!!", "", JOptionPane.ERROR_MESSAGE);
@@ -746,7 +675,8 @@ public class StaffPanel extends javax.swing.JPanel {
             }
         }
         if (mode == Mode.MODIFY) {
-            //jTextField_ID.setEnabled(false);
+//			jComboBox_Branch.setEnabled(false);
+//            jTextField_ID.setEnabled(false);
             String username = jTextField_ID.getText();
             String Full_Name = jTextField_Name.getText();
             String genderEndlish = getSelectedButtonText(buttonGroup1);
@@ -760,24 +690,15 @@ public class StaffPanel extends javax.swing.JPanel {
             }
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             String date_of_birth = sdf.format(jDateChooser_DateOfBirth.getDate());
-            String specific_address = jTextField_Address.getText();
+            String address = jTextField_Address.getText();
             String email = jTextField_Email.getText();
-            String phone_number = jTextField_PhoneNumber.getText();
-            int ward_id = getIdWard(jComboBox_Commune.getSelectedItem().toString(), jComboBox_District.getSelectedItem().toString(), jComboBox_Province.getSelectedItem().toString());
-            String registeredDate = java.time.LocalDate.now().toString();
-
-            int address_id = getAddress_idBySpecific_address(ward_id, specific_address);
-            if (address_id == -1) {
-                insertNewAddress(ward_id, specific_address);
-                address_id = getAddress_idBySpecific_address(ward_id, specific_address);
-            } else {
-                address_id = getAddress_idBySpecific_address(ward_id, specific_address);
-            }
-
+            String phone = jTextField_PhoneNumber.getText();
             String role = jComboBox_Role.getSelectedItem().toString();
             int roleId = getIdRole(role);
+			String branch = jComboBox_Branch.getSelectedItem().toString();
+			String branch_id = getIdBranch(branch);
 
-            boolean flag = updateAccount(username, Full_Name, gender, date_of_birth, address_id, phone_number, email, roleId);
+            boolean flag = updateAccount(branch_id, username, Full_Name, gender, date_of_birth, address, phone, email, roleId);
             if (flag == true) {
                 JOptionPane.showMessageDialog(null, "Sửa thông tin nhân viên mới thành công!!!", "", JOptionPane.CLOSED_OPTION);
                 getStaff();
@@ -785,7 +706,9 @@ public class StaffPanel extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(null, "Sửa thông tin nhân viên mới thất bại!!!", "", JOptionPane.ERROR_MESSAGE);
             }
         }
-        //UIController.showCardLayout("cardFirst", jPanel_Card);
+        UIController.showCardLayout("cardFirst", jPanel_Card);
+		setEditableForAll(false);
+		clearAll();
     }//GEN-LAST:event_jButton_OKActionPerformed
 
     private void jButton_CancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_CancelActionPerformed
@@ -847,60 +770,80 @@ public class StaffPanel extends javax.swing.JPanel {
         UIController.showCardLayout("cardSecond", jPanel_Card);
         setEditableForAll(true);
         jTextField_ID.setEditable(true);
-
-        Date date = new Date();
-        jDateChooser_DateOfBirth.setDate(date);
-        jComboBox_Province.setSelectedIndex(0);
-        jComboBox_District.setSelectedIndex(0);
-        jComboBox_Commune.setSelectedIndex(0);
     }//GEN-LAST:event_jButton_AddActionPerformed
 
-    //ok
+    private String getCurrentID(Connection connection, String branch_id) throws SQLException {
+        // Truy vấn cơ sở dữ liệu để lấy mã tăng dần hiện tại
+        String query = "SELECT MAX(id) AS maxID FROM account WHERE branch_id = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+		preparedStatement.setString(1, branch_id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        
+        String currentID = branch_id + "A000"; // Giá trị mặc định nếu chưa có dữ liệu trong bảng
+        
+        while (resultSet.next()) {
+            String maxID = resultSet.getString("maxID");
+            if (maxID != null) {
+                currentID = maxID;
+            }
+        }
+        
+        preparedStatement.close();
+        resultSet.close();
+        
+        return currentID;
+    }
+
+    private int getNumber(String currentID) {
+        // Tách phần số từ mã hiện tại
+        String numberPart = currentID.substring(currentID.length() - 3);
+        return Integer.parseInt(numberPart);
+    }
+
+    private String generateNewID(int nextNumber, String branch_id) {
+		nextNumber++;
+        // Ghép phần số vào mã mới
+		String s = branch_id + "A";
+        return s + String.format("%03d", nextNumber);
+    }	
+
     public boolean insertAccount(Staff s) {
         Connection ketNoi = Connect.GetConnect();
-        String sql = "INSERT INTO account (username, password , Full_Name, gender,date_of_birth,registered_date,address_id,phone_number,email,role_id,status)\n"
-                + "VALUES (?,?, ?, ?,?,?,?,?,?,?,?)";
+		String current_id = "";
+		try {
+			current_id = getCurrentID(ketNoi, s.getBranch_id());
+		} catch (SQLException ex) {
+			Logger.getLogger(StaffPanel.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		int new_num = getNumber(current_id);
+		String new_id = generateNewID(new_num, s.getBranch_id());
+		System.out.println("New user id: " + new_id);
+        String sql = "INSERT INTO account (id, branch_id, account_role_id, account_name, gender, date_of_birth, registered_date, email, phone, account_address, account_username, account_password, account_status) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
         PreparedStatement ps;
         try {
             ps = ketNoi.prepareStatement(sql);
-            ps.setString(1, s.getUsername());
-            ps.setString(2, s.getPassword());
-            ps.setString(3, s.getFullName());
-            ps.setString(4, s.getGender());
-            ps.setString(5, s.getDateOfBirth());
-            ps.setString(6, s.getRegisteredDate());
-            ps.setInt(7, s.getAddress_id());
-            ps.setString(8, s.getPhoneNumber());
-            ps.setString(9, s.getEmail());
-            ps.setInt(10, s.getRoleId());
-            ps.setInt(11, s.getStatus());
+			ps.setString(1, new_id);
+			ps.setString(2, s.getBranch_id());
+			ps.setInt(3, s.getRoleId());
+			ps.setString(4, s.getFullName());
+			ps.setString(5, s.getGender());
+			ps.setString(6, s.getDateOfBirth());
+			ps.setString(7, s.getRegisteredDate());
+			ps.setString(8, s.getEmail());
+			ps.setString(9, s.getPhoneNumber());
+			ps.setString(10, s.getAddress());
+			ps.setString(11, s.getUsername());
+			ps.setString(12, s.getPassword());
+			ps.setInt(13, s.getStatus());
+			
             return ps.executeUpdate() > 0;
 
         } catch (SQLException ex) {
             Logger.getLogger(ReaderPanel.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
+		System.out.println("Insert staff failed!");
         return false;
-    }
-
-    //
-    int getIdWard(String nameWard, String nameDistrict, String nameProvince) {
-        int i = 0;
-        Connection ketNoi = Connect.GetConnect();
-        try {
-            PreparedStatement ps = ketNoi.prepareStatement("select ward.ward_id from ward where ward.ward_name = ? and ward.district_id = ?");
-            ps.setString(1, nameWard);
-            ps.setInt(2, getIdDistrict(nameDistrict, nameProvince));
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                i = rs.getInt(1);
-            }
-            ps.close();
-            rs.close();
-            ketNoi.close();
-        } catch (SQLException ex) {
-        }
-        return i;
     }
 
     public String getSelectedButtonText(ButtonGroup buttonGroup) {
@@ -918,24 +861,24 @@ public class StaffPanel extends javax.swing.JPanel {
         mode = Mode.MODIFY;
         UIController.showCardLayout("cardSecond", jPanel_Card);
         setEditableForAll(true);
+		jComboBox_Branch.setEnabled(false);
     }//GEN-LAST:event_jButton_ModifyActionPerformed
 
-    public boolean updateAccount(String username, String Full_Name, String gender, String date_of_birth, int address_id, String phone_number, String email, int roleId) {
+    public boolean updateAccount(String branch_id, String username, String Full_Name, String gender, String date_of_birth, String address, String phone_number, String email, int roleId) {
         Connection ketNoi = Connect.GetConnect();
-        String sql = "update account\n"
-                + "set Full_Name= ?, gender = ?, date_of_birth = ?,address_id = ?, phone_number= ?, email= ? , role_id = ?\n"
-                + "WHERE username = ?";
+        String sql = "update account set branch_id = ?, account_name = ?, gender = ?, date_of_birth = ?, account_address = ?, phone = ?, email = ?, account_role_id = ? where account_username = ?";
         PreparedStatement ps;
         try {
             ps = ketNoi.prepareStatement(sql);
-            ps.setString(1, Full_Name);
-            ps.setString(2, gender);
-            ps.setString(3, date_of_birth);
-            ps.setInt(4, address_id);
-            ps.setString(5, phone_number);
-            ps.setString(6, email);
-            ps.setInt(7, roleId);
-            ps.setString(8, username);
+			ps.setString(1, branch_id);
+            ps.setString(2, Full_Name);
+            ps.setString(3, gender);
+            ps.setString(4, date_of_birth);
+            ps.setString(5, address);
+            ps.setString(6, phone_number);
+            ps.setString(7, email);
+            ps.setInt(8, roleId);
+            ps.setString(9, username);
             ps.executeUpdate();
             return true;
         } catch (SQLException ex) {
@@ -967,7 +910,7 @@ public class StaffPanel extends javax.swing.JPanel {
 
     // status 0 => 1
     public void xoaNhanVien(String maNV) {
-        String sql = "update account set status = 0 where username =  ? ";
+        String sql = "update account set account_status = 0 where id =  ? ";
         Connection con = Connect.GetConnect();
         try {
             PreparedStatement ps = con.prepareStatement(sql);
@@ -982,49 +925,49 @@ public class StaffPanel extends javax.swing.JPanel {
         }
     }
 
-    private void jComboBox_ProvinceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox_ProvinceActionPerformed
-        // TODO add your handling code here:
+    String getIdBranch(String name) {
+        String branch_id = "";
         Connection ketNoi = Connect.GetConnect();
         try {
-            PreparedStatement ps = ketNoi.prepareStatement("select district.district_name from district where district.province_id = ?");
-            ps.setInt(1, getIdProvince(jComboBox_Province.getSelectedItem().toString()));
+            PreparedStatement ps = ketNoi.prepareStatement("select id from branch where branch_name = ?");
+            ps.setString(1, name);
             ResultSet rs = ps.executeQuery();
-            jComboBox_District.removeAllItems();
             while (rs.next()) {
-                jComboBox_District.addItem(rs.getString(1));
+                branch_id = rs.getString(1);
             }
             ps.close();
             rs.close();
             ketNoi.close();
         } catch (SQLException ex) {
-            System.out.println("Lỗi lấy Province!!");
+            System.out.println("Lỗi lấy branch_id");
         }
-    }//GEN-LAST:event_jComboBox_ProvinceActionPerformed
-
-    int getIdProvince(String nameProvince) {
-        int i = 0;
+        return branch_id;
+    }	
+	
+    String getNameBranch(String name) {
+        String branch_id = "";
         Connection ketNoi = Connect.GetConnect();
         try {
-            PreparedStatement ps = ketNoi.prepareStatement("select province.province_id from province where province.province_name = ?");
-            ps.setString(1, nameProvince);
+            PreparedStatement ps = ketNoi.prepareStatement("select branch_name from branch where id = ?");
+            ps.setString(1, name);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                i = rs.getInt(1);
+                branch_id = rs.getString(1);
             }
             ps.close();
             rs.close();
             ketNoi.close();
         } catch (SQLException ex) {
-            System.out.println("Lỗi lấy IdProvince!!");
+            System.out.println("Lỗi lấy branch_name");
         }
-        return i;
-    }
+        return branch_id;
+    }	
 
     int getIdRole(String role) {
         int i = 0;
         Connection ketNoi = Connect.GetConnect();
         try {
-            PreparedStatement ps = ketNoi.prepareStatement("select role.role_id from role where role.role = ?");
+            PreparedStatement ps = ketNoi.prepareStatement("select id from account_role where account_name = ?");
             ps.setString(1, role);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -1039,44 +982,28 @@ public class StaffPanel extends javax.swing.JPanel {
         return i;
     }
 
-    private void jComboBox_DistrictActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox_DistrictActionPerformed
-        // TODO add your handling code here:
+    String getUserName(String id) {
+        String username = "";
         Connection ketNoi = Connect.GetConnect();
         try {
-            PreparedStatement ps = ketNoi.prepareStatement("select ward.ward_name from ward where ward.district_id = ?");
-            ps.setInt(1, getIdDistrict(jComboBox_District.getSelectedItem().toString(), jComboBox_Province.getSelectedItem().toString()));
-            ResultSet rs = ps.executeQuery();
-            jComboBox_Commune.removeAllItems();
-            while (rs.next()) {
-                jComboBox_Commune.addItem(rs.getString(1));
-            }
-            ps.close();
-            rs.close();
-            ketNoi.close();
-        } catch (Exception ex) {
-
-        }
-    }//GEN-LAST:event_jComboBox_DistrictActionPerformed
-
-    int getIdDistrict(String nameDistrict, String nameProvince) {
-        int i = 0;
-        Connection ketNoi = Connect.GetConnect();
-        try {
-            PreparedStatement ps = ketNoi.prepareStatement("select district.district_id from district where district.district_name = ? and district.province_id = ?");
-            ps.setString(1, nameDistrict);
-            ps.setInt(2, getIdProvince(nameProvince));
+            PreparedStatement ps = ketNoi.prepareStatement("select account_username from account where id = ?");
+            ps.setString(1, id);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                i = rs.getInt(1);
+                username = rs.getString(1);
             }
             ps.close();
             rs.close();
             ketNoi.close();
         } catch (SQLException ex) {
-            System.out.println("Lỗi lấy district_id!!");
+            System.out.println("Lỗi lấy account_username!");
         }
-        return i;
+        return username;
     }
+
+    private void jComboBox_BranchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox_BranchActionPerformed
+
+    }//GEN-LAST:event_jComboBox_BranchActionPerformed
 
 
     private void jTable_StaffMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable_StaffMouseClicked
@@ -1084,26 +1011,24 @@ public class StaffPanel extends javax.swing.JPanel {
         DefaultTableModel model = (DefaultTableModel) jTable_Staff.getModel();
         int selectedRow = jTable_Staff.getSelectedRow();
 
-        List<Integer> list = getIdDistrictAndIdProvince(model.getValueAt(selectedRow, 0).toString());
-        jTextField_ID.setText(model.getValueAt(selectedRow, 0).toString());
-        jTextField_Name.setText(model.getValueAt(selectedRow, 1).toString());
-        jTextField_Email.setText(model.getValueAt(selectedRow, 7).toString());
-        jTextField_PhoneNumber.setText(model.getValueAt(selectedRow, 6).toString());
-        jTextField_Address.setText(model.getValueAt(selectedRow, 5).toString().split(" - ")[0]);
-        jComboBox_Province.setSelectedIndex(list.get(2) - 1);
-        jComboBox_District.setSelectedItem(model.getValueAt(selectedRow, 5).toString().split(" - ")[2]);
-        jComboBox_Commune.setSelectedItem(model.getValueAt(selectedRow, 5).toString().split(" - ")[1]);
-        jComboBox_Role.setSelectedItem(model.getValueAt(selectedRow, 2).toString());
-        if (model.getValueAt(selectedRow, 3).toString().equalsIgnoreCase("Nam")) {
+//        List<Integer> list = getIdDistrictAndIdProvince(model.getValueAt(selectedRow, 0).toString());
+        jTextField_ID.setText(getUserName(model.getValueAt(selectedRow, 0).toString()));
+        jTextField_Name.setText(model.getValueAt(selectedRow, 2).toString());
+        jTextField_Email.setText(model.getValueAt(selectedRow, 8).toString());
+        jTextField_PhoneNumber.setText(model.getValueAt(selectedRow, 7).toString());
+        jTextField_Address.setText(model.getValueAt(selectedRow, 6).toString());
+        jComboBox_Branch.setSelectedItem(getNameBranch(model.getValueAt(selectedRow, 1).toString()));
+        jComboBox_Role.setSelectedItem(model.getValueAt(selectedRow, 3).toString());
+        if (model.getValueAt(selectedRow, 4).toString().equalsIgnoreCase("Nam")) {
             jRadioButton_Male.setSelected(true);
-        } else if (model.getValueAt(selectedRow, 3).toString().equalsIgnoreCase("Nữ")) {
+        } else if (model.getValueAt(selectedRow, 4).toString().equalsIgnoreCase("Nữ")) {
             jRadioButton_Female.setSelected(true);
         } else {
             jRadioButton_Other.setSelected(true);
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         try {
-            jDateChooser_DateOfBirth.setDate(sdf.parse(model.getValueAt(selectedRow, 4).toString()));
+            jDateChooser_DateOfBirth.setDate(sdf.parse(model.getValueAt(selectedRow, 5).toString()));
         } catch (ParseException ex) {
             System.out.println(ex.getMessage());
         }
@@ -1112,21 +1037,7 @@ public class StaffPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_jTable_StaffMouseClicked
 
     private void jComboBox_RoleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox_RoleActionPerformed
-        Connection ketNoi = Connect.GetConnect();
-        try {
-            PreparedStatement ps = ketNoi.prepareStatement("select role from role");
-            ps.setInt(1, getIdRole(jComboBox_Role.getSelectedItem().toString()));
-            ResultSet rs = ps.executeQuery();
-            jComboBox_Role.removeAllItems();
-            while (rs.next()) {
-                jComboBox_Role.addItem(rs.getString(1));
-            }
-            ps.close();
-            rs.close();
-            ketNoi.close();
-        } catch (SQLException ex) {
-            System.out.println("Lỗi lấy role!!");
-        }
+
     }//GEN-LAST:event_jComboBox_RoleActionPerformed
 
     private void jButton_ClearSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_ClearSearchActionPerformed
@@ -1163,55 +1074,6 @@ public class StaffPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_jButton_ImportExcelActionPerformed
 
-    List<Integer> getIdDistrictAndIdProvince(String username) {
-        int i = 0;
-        int j = 0;
-        int x = 0;
-        List<Integer> list = new ArrayList<Integer>();
-        Connection ketNoi = Connect.GetConnect();
-        try {
-            PreparedStatement ps = ketNoi.prepareStatement("select ward.ward_id,district.district_id,province.province_id from ward,district,province,address\n"
-                    + "where ward.district_id = district.district_id\n"
-                    + "and district.province_id = province.province_id\n"
-                    + "and ward.ward_id = address.ward_id\n"
-                    + "and address.address_id = ?");
-            ps.setInt(1, getIdAddressByUserName(username));
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                i = rs.getInt(1);
-                j = rs.getInt(2);
-                x = rs.getInt(3);
-            }
-            ps.close();
-            rs.close();
-            ketNoi.close();
-        } catch (SQLException ex) {
-            System.out.println("Lỗi lấy getIdDistrictAndIdProvince");
-        }
-        list.add(i);
-        list.add(j);
-        list.add(x);
-        return list;
-    }
-
-    int getIdAddressByUserName(String username) {
-        int i = 0;
-        Connection ketNoi = Connect.GetConnect();
-        try {
-            PreparedStatement ps = ketNoi.prepareStatement("select account.address_id from account where account.username = ?");
-            ps.setString(1, username);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                i = rs.getInt(1);
-            }
-            ps.close();
-            rs.close();
-            ketNoi.close();
-        } catch (SQLException ex) {
-            System.out.println("Lỗi lấy address_id từ username!!");
-        }
-        return i;
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
@@ -1224,16 +1086,11 @@ public class StaffPanel extends javax.swing.JPanel {
     private javax.swing.JButton jButton_Modify;
     private javax.swing.JButton jButton_OK;
     private javax.swing.JButton jButton_Remove;
-    private javax.swing.JComboBox<String> jComboBox_Commune;
-    private javax.swing.JComboBox<String> jComboBox_District;
-    private javax.swing.JComboBox<String> jComboBox_Province;
+    private javax.swing.JComboBox<String> jComboBox_Branch;
     private javax.swing.JComboBox<String> jComboBox_Role;
     private com.toedter.calendar.JDateChooser jDateChooser_DateOfBirth;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
